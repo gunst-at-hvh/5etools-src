@@ -29,3 +29,6 @@ sw-injector.js
 
 # Dev scripts
 dev-*.sh
+
+# Generated tool data
+tools/data-2024.json
