@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpellForge 2024</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Skranji:wght@400;700&family=Almendra:ital,wght@0,400;0,700;1,400&family=Uncial+Antiqua&family=Bebas+Neue&family=Playfair+Display:wght@700;900&display=swap&family=Aladdin&family=Amiri:ital,wght@0,400;0,700;1,400');
+:root{
+  --bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--bdr:#374151;
+  --txt:#e2e8f0;--txt-d:#94a3b8;--acc:#c9a84c;--acc2:#e8c96d;
+  --card-w:200px;--card-h:280px;--hdr-h:38px;
+  --body-max:0.5625rem;--stats-sz:0.46rem;
+  --card-r:8px;--badge-r:50%;
+  --name-font:'Cinzel',serif;--name-wt:700;--body-lines:10;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Crimson Pro',serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+header{background:linear-gradient(135deg,#0a0918,#1a1530);border-bottom:2px solid var(--acc);padding:8px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+header h1{font-family:'Cinzel',serif;font-weight:900;font-size:1.25rem;color:var(--acc2);letter-spacing:2px;flex:1;}
+header h1 span{color:var(--txt-d);font-weight:400;font-size:.72rem;}
+.layout{display:grid;grid-template-columns:275px 1fr;height:calc(100vh - 48px);}
+.sidebar{background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+.sh{padding:8px 10px;border-bottom:1px solid var(--bdr);background:var(--bg3);}
+.sh h2{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:3px;color:var(--txt-d);text-transform:uppercase;margin-bottom:6px;}
+.fr{display:flex;gap:3px;margin-bottom:3px;}
+select,input[type=text]{background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:3px 6px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:.82rem;width:100%;}
+select:focus,input:focus{outline:none;border-color:var(--acc);}
+.sb{position:relative;flex:1;}
+.sb input{padding-left:20px;}
+.sb::before{content:'\1F50D';position:absolute;left:5px;top:50%;transform:translateY(-50%);font-size:.62rem;pointer-events:none;}
+.sc{display:flex;gap:3px;padding:4px 10px;border-bottom:1px solid var(--bdr);align-items:center;}
+.spell-list{flex:1;overflow-y:auto;padding:1px 0;}
+.spell-list::-webkit-scrollbar{width:4px;}
+.spell-list::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+.si{display:flex;align-items:center;padding:2px 10px;cursor:pointer;gap:4px;border-left:3px solid transparent;transition:background .1s;}
+.si:hover{background:rgba(255,255,255,.04);}
+.si.sel{background:rgba(201,168,76,.08);border-left-color:var(--acc);}
+.si input[type=checkbox]{width:11px;min-width:11px;cursor:pointer;accent-color:var(--acc);}
+.sn{flex:1;font-size:.82rem;}
+.slb{font-size:.58rem;font-family:'Cinzel',serif;font-weight:700;padding:1px 4px;border-radius:5px;background:var(--bg3);color:var(--txt-d);border:1px solid var(--bdr);}
+.cdots{display:flex;gap:2px;}
+.cdot{width:5px;height:5px;border-radius:50%;}
+.lh{padding:4px 10px 2px;font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;color:var(--acc);background:linear-gradient(to right,rgba(201,168,76,.1),transparent);border-top:1px solid rgba(201,168,76,.12);margin-top:1px;}
+.mp{display:flex;flex-direction:column;overflow:hidden;}
+.tabs{display:flex;border-bottom:1px solid var(--bdr);background:var(--bg2);}
+.tb{padding:7px 13px;background:none;border:none;color:var(--txt-d);cursor:pointer;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;border-bottom:2px solid transparent;transition:all .2s;}
+.tb.active{color:var(--acc);border-bottom-color:var(--acc);}
+.tb:hover:not(.active){color:var(--txt);}
+.tc{display:none;flex:1;overflow:hidden;}
+.tc.active{display:flex;flex-direction:column;}
+.sw{flex:1;overflow-y:auto;padding:11px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-content:start;}
+.ss{background:var(--bg2);border:1px solid var(--bdr);border-radius:6px;padding:10px;}
+.ss.fw{grid-column:1/-1;}
+.ss h3{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:2px;color:var(--acc);text-transform:uppercase;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--bdr);}
+.cr{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.cr label{font-size:.78rem;flex:1;color:var(--txt-d);}
+.cr input[type=color]{width:28px;height:20px;border:1px solid var(--bdr);border-radius:3px;background:none;cursor:pointer;padding:1px;}
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.rg{display:flex;gap:4px;flex-wrap:wrap;}
+.rg label{display:flex;align-items:center;gap:3px;font-size:.76rem;cursor:pointer;padding:2px 6px;border:1px solid var(--bdr);border-radius:4px;transition:all .15s;}
+.rg label:hover{border-color:var(--acc);}
+.rg input[type=radio]{display:none;}
+.rg label.active{border-color:var(--acc);background:rgba(201,168,76,.1);color:var(--acc);}
+.slr{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.slr label{font-size:.78rem;color:var(--txt-d);min-width:105px;}
+.slr input[type=range]{flex:1;accent-color:var(--acc);}
+.slr span{font-size:.7rem;color:var(--acc);min-width:32px;text-align:right;}
+.slr select{width:auto;font-size:.78rem;}
+.slr input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--acc);}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.tr{display:flex;align-items:center;gap:3px;}
+.tr label{font-size:.75rem;flex:1;color:var(--txt-d);}
+.tp{padding:1px 5px;border-radius:3px;font-family:'Cinzel',serif;font-size:.55rem;font-weight:700;color:#fff;}
+.pt{display:flex;gap:5px;padding:7px 11px;border-bottom:1px solid var(--bdr);background:var(--bg2);align-items:center;flex-wrap:wrap;}
+.pt span{font-size:.7rem;color:var(--txt-d);font-family:'Cinzel',serif;}
+.ca{flex:1;overflow-y:auto;padding:14px;background:#252540;}
+.cg{display:flex;flex-wrap:wrap;gap:10px;}
+.es{text-align:center;padding:40px 20px;color:var(--txt-d);}
+.es .bi{font-size:3rem;margin-bottom:8px;}
+.es h3{font-family:'Cinzel',serif;margin-bottom:6px;color:var(--txt);}
+.btn{padding:4px 10px;border:1px solid var(--bdr);background:var(--bg3);color:var(--txt);border-radius:4px;cursor:pointer;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s;white-space:nowrap;}
+.btn:hover{border-color:var(--acc);color:var(--acc);background:rgba(201,168,76,.1);}
+.btn.pr{background:linear-gradient(135deg,var(--acc),#b8952f);border-color:var(--acc);color:#0f0e17;font-weight:700;}
+.btn.pr:hover{background:linear-gradient(135deg,var(--acc2),var(--acc));}
+.btn.dr{border-color:#ef4444;color:#ef4444;}
+.btn.dr:hover{background:rgba(239,68,68,.1);}
+.btn.sm{padding:3px 7px;font-size:.56rem;}
+.ja{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px;gap:7px;}
+.jt{display:flex;gap:5px;align-items:center;}
+.jo{flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:5px;padding:8px;overflow:auto;font-family:'Courier New',monospace;font-size:.68rem;color:#86efac;white-space:pre;line-height:1.5;}
+
+/* ========= SPELL CARD ========= */
+.cw{cursor:pointer;transition:transform .18s;}
+.cw:hover{transform:translateY(-3px) scale(1.02);}
+.spell-card{width:var(--card-w);height:var(--card-h);border-radius:var(--card-r);position:relative;overflow:hidden;box-shadow:0 5px 18px rgba(0,0,0,.5),0 0 0 1.5px rgba(0,0,0,.8);background:#fff;}
+/* FRONT */
+.cf{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;}
+/* Header */
+.cf-h{height:var(--hdr-h);position:relative;display:flex;align-items:center;padding:0 5px;flex-shrink:0;gap:3px;}
+/* Level badge */
+.cf-l{display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:900;color:#fff;flex-shrink:0;border:1.5px solid rgba(255,255,255,.6);border-radius:var(--badge-r);text-shadow:0 1px 3px rgba(0,0,0,.5);}
+/* Name */
+.cf-n{flex:1;text-align:center;font-family:var(--name-font);font-weight:var(--name-wt);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);line-height:1.15;letter-spacing:.3px;padding:0 2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+/* Mech tag top-right — only for ATK/SAVE */
+.cf-mech{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;border-radius:3px;font-family:'Cinzel',serif;color:#fff;flex-shrink:0;line-height:1.1;align-self:stretch;margin:4px 0 4px 0;min-width:28px;}
+.cf-mech-l{font-size:.44rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;}
+.cf-mech-a{font-size:.5rem;font-weight:900;letter-spacing:.5px;opacity:.85;}
+/* Stats row */
+.cf-s{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;border-bottom:1.5px solid #222;flex-shrink:0;background:#f9f9f9;}
+.cf-sp{background:#ccc;margin:2px 0;}
+.cf-si{padding:2px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0;}
+.cf-sl{font-family:'Cinzel',serif;font-size:.35rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#555;line-height:1;margin-bottom:1px;white-space:nowrap;}
+.cf-sv{font-family:'IM Fell English',serif;font-size:var(--stats-sz);color:#111;line-height:1.15;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;text-align:center;}
+.cf-sv .cb{font-family:'Cinzel',serif;font-weight:900;font-size:.6rem;color:#b00;}
+/* Body */
+.cf-b{flex:1;padding:3px 5px 2px;overflow:hidden;display:flex;flex-direction:column;gap:1px;}
+.cf-bd{display:flex;gap:2px;margin-bottom:1px;flex-wrap:wrap;}
+.cf-bg{font-family:'Cinzel',serif;font-size:.34rem;font-weight:700;padding:1px 2px;border-radius:2px;letter-spacing:.3px;color:#fff;flex-shrink:0;}
+.cf-bg.co{background:#7f1d1d;}
+.cf-bg.ri{background:#14532d;}
+.cf-de{font-family:'IM Fell English',serif;line-height:1.4;color:#111;overflow:hidden;display:-webkit-box;-webkit-line-clamp:var(--body-lines);-webkit-box-orient:vertical;flex:1;}
+.cf-de strong{font-weight:800;color:#000;}
+.cf-hi{font-family:'IM Fell English',serif;line-height:1.3;color:#444;font-style:italic;padding-top:2px;border-top:1px dashed #bbb;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex-shrink:0;}
+/* Footer */
+.cf-f{padding:2px 5px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid #222;background:#f5f5f5;flex-shrink:0;gap:3px;}
+.cf-cls{font-family:'Cinzel',serif;font-size:.38rem;font-weight:600;letter-spacing:.2px;color:#444;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.cf-cat{font-family:'Cinzel',serif;font-size:.34rem;font-weight:700;padding:0 3px;border-radius:2px;color:#fff;flex-shrink:0;}
+.cf-short-btn{font-size:.5rem;cursor:pointer;opacity:.5;margin-left:auto;padding:0 2px;user-select:none;flex-shrink:0;transition:opacity .15s;}
+.cf-short-btn:hover{opacity:1;}
+.cf-cat-top{font-family:'Cinzel',serif;font-size:.38rem;font-weight:700;padding:1px 3px;border-radius:2px;color:#fff;text-align:center;margin-top:1px;letter-spacing:.2px;}
+.cf-sch{font-family:'IM Fell English',serif;font-style:italic;font-size:.48rem;font-weight:700;flex-shrink:0;}
+/* BACK */
+.cbk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:var(--card-r);opacity:0;transition:opacity .1s;}
+.cbk-i{width:calc(100% - 10px);height:calc(100% - 10px);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden;}
+.cbk-p{position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(45deg,#000 0,#000 1px,transparent 0,transparent 50%);background-size:8px 8px;}
+.cbk-s{font-size:1.8rem;z-index:1;}
+.cbk-t{font-family:'Cinzel',serif;font-size:.46rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;z-index:1;}
+.cbk-o{font-size:.5rem;letter-spacing:5px;z-index:1;opacity:.5;}
+.cbk-info{display:flex;flex-direction:column;align-items:center;gap:2px;z-index:1;margin-top:4px;}
+.cbk-info-row{display:flex;gap:3px;align-items:center;font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.5px;}
+.cbk-lvl{font-weight:900;font-size:.6rem;}
+.show-back .cf{opacity:0;pointer-events:none;}
+.show-back .cbk{opacity:1;}
+/* Modal */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.md{background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;max-width:520px;width:92%;max-height:85vh;overflow-y:auto;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.md h2{font-family:'Cinzel',serif;color:var(--acc);margin-bottom:10px;font-size:.9rem;}
+.fg{margin-bottom:7px;}
+.fg label{display:block;font-size:.7rem;color:var(--txt-d);margin-bottom:2px;font-family:'Cinzel',serif;letter-spacing:1px;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:4px 6px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:.82rem;}
+.fg textarea{height:70px;resize:vertical;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.mf{display:flex;gap:5px;justify-content:flex-end;margin-top:10px;}
+.ccb{display:flex;flex-wrap:wrap;gap:3px;}
+.ccbi{display:flex;align-items:center;gap:2px;padding:2px 5px;border:1px solid var(--bdr);border-radius:4px;cursor:pointer;font-size:.72rem;transition:all .15s;}
+.ccbi:hover{border-color:var(--acc);}
+.ccbi.active{border-color:var(--acc);background:rgba(201,168,76,.15);}
+.notif{position:fixed;bottom:12px;right:12px;background:var(--bg2);border:1px solid var(--acc);border-radius:5px;padding:6px 11px;font-size:.78rem;z-index:300;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;}
+.notif.show{opacity:1;transform:translateY(0);}
+@media print{
+  *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important;}
+  @page{size:A4 portrait;margin:6mm;}
+  body{background:white!important;margin:0;padding:0;}
+  header,.sidebar,.tabs,.pt,.sw,.ja{display:none!important;}
+  .layout{display:grid!important;grid-template-columns:0 1fr!important;height:auto!important;}
+  .mp{display:block!important;overflow:visible!important;}
+  .tc{display:block!important;}
+  .right-panel{display:none!important;}#tab-preview{display:flex!important;flex-direction:column;}
+  .ca{padding:0!important;overflow:visible!important;background:white!important;}
+  .cg{
+    display:grid!important;
+    grid-template-columns:repeat(3,1fr)!important;
+    grid-template-rows:repeat(3,1fr)!important;
+    gap:3mm!important;
+    width:197mm!important;
+    height:282mm!important;
+    page-break-after:always;
+    break-after:page;
+  }
+  /* Each group of 9 cards = one A4 page */
+  .cg .cw:nth-child(9n+1){
+    /* start of a new page-group — handled by JS chunking */
+  }
+  .cw{
+    width:100%!important;
+    height:100%!important;
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    overflow:hidden!important;
+    cursor:default!important;
+  }
+  .spell-card{
+    width:100%!important;
+    height:100%!important;
+    box-shadow:none!important;
+    border:0.5px solid #bbb!important;
+    overflow:hidden!important;
+  }
+  /* hide backs during print — show fronts */
+  .cbk{display:none!important;}
+  .cf{opacity:1!important;pointer-events:none!important;}
+  .show-back .cf{opacity:1!important;}
+  .es{display:none!important;}
+}
+
+/* ════ NEW LAYOUT SYSTEM ════════════════════════════════════ */
+.mp{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;}
+.cards-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;
+  transition:margin-right .22s cubic-bezier(.4,0,.2,1);}
+.cards-main.panel-open{margin-right:340px;}
+.ca{flex:1;overflow-y:auto;padding:14px;background:#252540;}
+/* Right panel slides in from right */
+.right-panel{position:fixed;top:48px;right:-340px;width:340px;
+  height:calc(100vh - 48px);background:var(--bg2);
+  border-left:2px solid var(--bdr);z-index:200;
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:right .22s cubic-bezier(.4,0,.2,1);
+  box-shadow:-6px 0 24px rgba(0,0,0,.35);}
+.right-panel.open{right:0;}
+.rp-head{display:flex;align-items:stretch;border-bottom:1px solid var(--bdr);
+  flex-shrink:0;background:var(--bg3);}
+.rp-tabs{display:flex;flex:1;}
+.rp-tab{flex:1;padding:7px 4px;border:none;background:none;color:var(--txt-d);
+  cursor:pointer;font-size:.56rem;font-family:'Cinzel',serif;letter-spacing:.4px;
+  text-transform:uppercase;border-bottom:2px solid transparent;transition:all .15s;}
+.rp-tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+.rp-tab:hover:not(.active){color:var(--txt);}
+.rp-close{padding:0 12px;border:none;background:none;color:var(--txt-d);
+  cursor:pointer;font-size:.9rem;border-left:1px solid var(--bdr);}
+.rp-close:hover{color:var(--txt);}
+.rp-body{flex:1;overflow-y:auto;}
+.rp-tc{display:none;}
+.rp-tc.active{display:block;}
+/* Tab bar: active panel state */
+.tb.panel-active{color:var(--acc)!important;border-bottom-color:var(--acc)!important;}
+/* ════ CARD DETAIL MODAL ════════════════════════════════════ */
+.cdm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);
+  z-index:500;align-items:center;justify-content:center;padding:16px;}
+.cdm.open{display:flex;}
+.cdm-box{background:var(--bg);border-radius:12px;width:min(540px,100%);
+  max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.7);}
+.cdm-hdr{padding:18px 18px 12px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:flex-start;gap:12px;}
+.cdm-info{flex:1;min-width:0;}
+.cdm-name{font-family:var(--name-font);font-size:1.2rem;font-weight:700;
+  color:var(--acc);margin-bottom:5px;line-height:1.2;}
+.cdm-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.cdm-tag{font-size:.56rem;padding:2px 7px;border-radius:3px;background:var(--bg3);
+  color:var(--txt-d);font-family:'Cinzel',serif;letter-spacing:.3px;}
+.cdm-tag.mech-atk{background:#b91c1c;color:#fff;}
+.cdm-tag.mech-save{background:#c2410c;color:#fff;}
+.cdm-close{flex-shrink:0;background:none;border:none;color:var(--txt-d);
+  font-size:1.4rem;cursor:pointer;padding:0 3px;line-height:1;margin-top:-2px;}
+.cdm-close:hover{color:var(--txt);}
+.cdm-grid{display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--bdr);border-left:1px solid var(--bdr);}
+.cdm-cell{padding:10px 12px;border-right:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.cdm-cell label{display:block;font-size:.46rem;letter-spacing:1.2px;
+  color:var(--txt-d);text-transform:uppercase;margin-bottom:3px;font-family:'Cinzel',serif;}
+.cdm-cell span{font-size:.85rem;font-weight:700;color:var(--txt);}
+.cdm-body{padding:18px;font-family:'IM Fell English',serif;font-size:.98rem;
+  line-height:1.78;color:var(--txt);}
+.cdm-body strong{font-family:'Cinzel',serif;font-size:.82em;}
+.cdm-higher{margin-top:14px;padding-top:12px;border-top:1px dashed var(--bdr);
+  font-style:italic;font-size:.88rem;color:var(--txt-d);}
+/* ════ SHORT TOGGLE ════════════════════════════════════════════ */
+.short-toggle{display:inline-flex;align-items:center;gap:4px;cursor:pointer;
+  padding:3px 10px;border-radius:4px;border:1px solid var(--bdr);
+  background:var(--bg3);font-size:.6rem;color:var(--txt-d);user-select:none;
+  transition:all .15s;white-space:nowrap;font-family:'Cinzel',serif;}
+.short-toggle.on{background:var(--acc);color:#1a1a2e;border-color:var(--acc);font-weight:700;}
+/* ════ MULTI-CATEGORY TAGS ════════════════════════════════════ */
+.cat-pills{display:flex;gap:2px;flex-wrap:wrap;align-items:center;}
+.cat-pill{font-size:.38rem;padding:1px 5px;border-radius:2px;color:#fff;
+  font-family:'Cinzel',serif;font-weight:700;letter-spacing:.3px;
+  line-height:1.7;white-space:nowrap;}
+/* Category in badges row (next to CONC/RITUAL) */
+.cf-bd-cat{display:inline-flex;gap:2px;vertical-align:middle;}
+/* ════ CARD HOVER: DETAIL BUTTON ══════════════════════════════ */
+.cw{position:relative;}
+.card-zoom-btn{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.55);
+  color:#fff;border:none;border-radius:4px;font-size:.55rem;padding:3px 6px;
+  cursor:pointer;opacity:0;transition:opacity .15s;z-index:20;font-family:'Cinzel',serif;}
+.cw:hover .card-zoom-btn{opacity:1;}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚔️ SpellForge <span>D&D 5e PHB 2024</span></h1>
+  <div style="display:flex;gap:5px;align-items:center">
+    <button class="btn sm" onclick="openAdd()">+ Custom</button>
+    <button class="btn sm" id="shortToggleBtn" onclick="toggleShortAll()" title="Toggle all cards between short and full description">📄 Short</button>
+    <button class="btn sm pr" onclick="doPrint()">🖨️ Print A4</button>
+  </div>
+</header>
+<div class="layout">
+<div class="sidebar">
+  <div class="sh">
+    <h2>Spell Library</h2>
+    <div class="fr"><div class="sb" style="flex:1"><input type="text" id="srch" placeholder="Search…" oninput="filt()"></div></div>
+    <div class="fr">
+      <select id="cfil" onchange="filt()">
+        <option value="">All Classes</option>
+        <option>Bard</option><option>Cleric</option><option>Druid</option>
+        <option>Paladin</option><option>Ranger</option><option>Sorcerer</option>
+        <option>Warlock</option><option>Wizard</option>
+      </select>
+      <select id="lfil" onchange="filt()">
+        <option value="">All Lvl</option>
+        <option value="0">0</option><option value="1">1</option>
+        <option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option>
+        <option value="6">6</option><option value="7">7</option>
+        <option value="8">8</option><option value="9">9</option>
+      </select>
+    </div>
+    <div class="fr">
+      <select id="sfil" onchange="filt()">
+        <option value="">All Schools</option>
+        <option>Abjuration</option><option>Conjuration</option><option>Divination</option>
+        <option>Enchantment</option><option>Evocation</option><option>Illusion</option>
+        <option>Necromancy</option><option>Transmutation</option>
+      </select>
+      <select id="mfil" onchange="filt()">
+        <option value="">All Types</option>
+        <option value="ATK">ATK</option><option value="SAVE">SAVE</option>
+        <option value="AUTO">Auto</option><option value="SELF">Self</option>
+        <option value="UTIL">Util</option>
+      </select>
+    </div>
+    <div class="fr">
+      <select id="catfil" onchange="filt()">
+        <option value="">All Categories</option>
+        <option value="Damage">Damage</option><option value="AOE">AOE</option>
+        <option value="CC">CC</option><option value="Buff">Buff</option>
+        <option value="Heal">Heal</option><option value="Utility">Utility</option>
+        <option value="Charm">Charm</option><option value="Defense">Defense</option>
+        <option value="Summon">Summon</option>
+      </select>
+    </div>
+  </div>
+  <div class="sc">
+    <button class="btn sm" onclick="selAll()">✓ All</button>
+    <button class="btn sm dr" onclick="clrAll()">✕ Clear</button>
+    <span id="cnt" style="margin-left:auto;font-size:.65rem;color:var(--txt-d)"></span>
+  </div>
+  <div class="spell-list" id="sl"></div>
+</div>
+<div class="mp" id="mp">
+  <div class="tabs" id="tabBar">
+    <button class="tb active" id="tbCards" onclick="showCardsOnly(this)">🃏 Karten</button>
+    <button class="tb" id="tbDesign" onclick="openPanel('design',this)">🎨 Design</button>
+    <button class="tb" id="tbColors" onclick="openPanel('colors',this)">🖌 Farben</button>
+    <button class="tb" id="tbJson"   onclick="openPanel('json',this)">📋 JSON</button>
+  </div>
+  <!-- Cards: always visible -->
+  <div class="cards-main" id="tab-preview">
+    <div class="pt">
+      <span id="selcnt">0 selected</span>
+      <div style="flex:1"></div>
+      <span class="short-toggle" id="shortToggle" onclick="toggleShortAll(this)" title="Kurz/Voll Beschreibung">📄 Kurz</span>
+      <button class="btn sm" onclick="allFront()">Fronts</button>
+      <button class="btn sm" onclick="allBack()">Backs</button>
+      <select id="csz" onchange="updSz()" style="width:auto">
+        <option value="200">Normal</option>
+        <option value="160">Klein</option>
+        <option value="240">Groß</option>
+        <option value="300">XL</option>
+      </select>
+      <button class="btn sm" onclick="openAdd()">+ Eigener</button>
+    </div>
+    <div class="ca" id="cardArea">
+      <div class="es" id="es"><div class="bi">📜</div><h3>Keine Zauber gewählt</h3><p>Wähle Zauber aus der Liste.</p></div>
+      <div class="cg" id="cg"></div>
+    </div>
+  </div>
+  <!-- Right panel: slides in -->
+  <div class="right-panel" id="rightPanel">
+    <div class="rp-head">
+      <div class="rp-tabs">
+        <button class="rp-tab active" id="rpt-design" onclick="switchPanel('design',this)">🎨 Design</button>
+        <button class="rp-tab" id="rpt-colors" onclick="switchPanel('colors',this)">🖌 Farben</button>
+        <button class="rp-tab" id="rpt-json" onclick="switchPanel('json',this)">📋 JSON</button>
+      </div>
+      <button class="rp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="rp-body">
+      <div class="rp-tc active" id="rp-design">
+      <div class="ss fw">
+        <h3>📐 Card Shape</h3>
+        <div class="slr"><label>Card Radius</label><input type="range" min="0" max="20" value="8" oninput="setProp('--card-r',this.value+'px');this.nextElementSibling.textContent=this.value+'px'"><span>8px</span></div>
+        <div class="slr"><label>Header Height</label><input type="range" min="22" max="60" value="38" oninput="setProp('--hdr-h',this.value+'px');this.nextElementSibling.textContent=this.value+'px'"><span>38px</span></div>
+      </div>
+      <div class="ss">
+        <h3>🔢 Level Badge</h3>
+        <div class="slr"><label>Shape</label>
+          <select onchange="setProp('--badge-r',this.value)" style="width:auto">
+            <option value="50%">Circle</option>
+            <option value="3px">Rounded</option>
+            <option value="0">Square</option>
+          </select>
+        </div>
+        <div class="slr"><label>Badge Size</label><input type="range" min="14" max="32" value="21" oninput="updBadge(this.value);this.nextElementSibling.textContent=this.value+'px'"><span>21px</span></div>
+        <div class="slr"><label>Number Size</label><input type="range" min="7" max="20" value="13" oninput="updLvlFont(this.value);this.nextElementSibling.textContent=this.value+'px'"><span>13px</span></div>
+      </div>
+      <div class="ss">
+        <h3>✍️ Spell Name Font</h3>
+        <div class="slr"><label>Font</label>
+          <select id="nameFont" onchange="setNameFont(this.value)" style="width:auto;font-size:.76rem">
+            <option value="'Cinzel',serif">Cinzel</option>
+            <option value="'Skranji',cursive">⚡ Skranji</option>
+            <option value="'Almendra',serif">✦ Almendra</option>
+            <option value="'Uncial Antiqua',cursive">🍀 Uncial</option>
+            <option value="'Cinzel Decorative',serif">Cinzel Deco</option>
+            <option value="'Playfair Display',serif">Playfair</option>
+            <option value="'IM Fell English',serif">IM Fell</option>
+            <option value="'Bebas Neue',sans-serif">Bebas</option>
+            <option value="'Aladdin',cursive">🌙 Aladdin</option>
+            <option value="'Amiri',serif">✦ Amiri</option>
+            <option value="serif">Serif</option>
+          </select>
+        </div>
+        <div class="slr"><label>Weight</label>
+          <select onchange="setNameWt(this.value)" style="width:auto">
+            <option value="400">Regular</option><option value="600">SemiBold</option>
+            <option value="700" selected>Bold</option><option value="900">Black</option>
+          </select>
+        </div>
+        <div class="slr"><label>Max Size</label><input type="range" min="7" max="16" value="11" step=".5" oninput="setNameSz(this.value);this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>11px</span></div>
+      </div>
+      <div class="ss">
+        <h3>📄 Body Text</h3>
+        <div class="slr"><label>Max Body Size</label><input type="range" min="6" max="14" value="9" step=".5" oninput="setProp('--body-max',this.value*.0625+'rem');render();this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>9px</span></div>
+        <div class="slr"><label>Auto-Scale</label><input type="checkbox" id="autoScale" checked onchange="render()" style="width:auto"> <span style="font-size:.75rem;color:var(--txt-d)">(bigger for short texts)</span></div>
+        <div class="slr"><label>Stats Size</label><input type="range" min="4" max="10" value="7" step=".5" oninput="setProp('--stats-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>7px</span></div>
+        <div class="slr"><label>Stats Bold</label><input type="checkbox" id="statsBold" onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Max Lines</label><input type="range" min="4" max="18" value="10" oninput="setProp('--body-lines',this.value);this.nextElementSibling.textContent=this.value"><span>10</span></div>
+      </div>
+      <div class="ss">
+        <h3>🏷️ Categories</h3>
+        <div class="tg" id="catcols"></div>
+      </div>
+      <div class="ss">
+        <h3>⚔️ Mechanic Tag (top-right)</h3>
+        <div class="slr"><label>Show ATK tag</label><input type="checkbox" id="showATK" checked onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Show SAVE tag</label><input type="checkbox" id="showSAVE" checked onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>ATK Color</label><input type="color" id="atkCol" value="#b91c1c" oninput="render()"></div>
+        <div class="slr"><label>SAVE Color</label><input type="color" id="saveCol" value="#c2410c" oninput="render()"></div>
+      </div>
+      <div class="ss">
+        <h3>🎨 Header Color</h3>
+        <div class="rg" id="cmg">
+          <label class="active" onclick="setCM('class')"><input type="radio" name="cm" value="class" checked>Class</label>
+          <label onclick="setCM('school')"><input type="radio" name="cm" value="school">School</label>
+          <label onclick="setCM('cat')"><input type="radio" name="cm" value="cat">Category</label>
+          <label onclick="setCM('black')"><input type="radio" name="cm" value="black">Black</label>
+          <label onclick="setCM('custom')"><input type="radio" name="cm" value="custom">Custom</label>
+        </div>
+        <div id="scRow" class="cr" style="margin-top:6px;display:none">
+          <label>Color</label><input type="color" id="scCol" value="#7f1d1d" oninput="render()">
+        </div>
+      </div>
+      <div class="ss">
+        <h3>📋 Footer Options</h3>
+        <div class="slr"><label>Show School</label><input type="checkbox" id="shSch" checked onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Show Category</label><input type="checkbox" id="shCat" onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Abbr. Classes</label><input type="checkbox" id="abbrCls" checked onchange="render()" style="width:auto"></div>
+      </div>
+      <div class="ss">
+        <h3>🔲 Card Back</h3>
+        <div class="rg" id="bmg">
+          <label class="active" onclick="setBM('hatch')"><input type="radio" name="bm" value="hatch" checked>Hatch</label>
+          <label onclick="setBM('border')"><input type="radio" name="bm" value="border">Border</label>
+          <label onclick="setBM('symbol')"><input type="radio" name="bm" value="symbol">Symbol</label>
+          <label onclick="setBM('colored')"><input type="radio" name="bm" value="colored">Colored</label>
+          <label onclick="setBM('blank')"><input type="radio" name="bm" value="blank">Blank</label>
+        </div>
+        <div class="cr" style="margin-top:6px">
+          <label>Symbol</label>
+          <select id="bsym" onchange="render()" style="width:auto">
+            <option>✦</option><option>⚔️</option><option>🐉</option><option>🌙</option>
+            <option>🔮</option><option>📜</option><option>🔥</option><option>❄️</option>
+            <option>⚡</option><option>☠️</option><option>🌿</option><option>🏰</option>
+          </select>
+        </div>
+        <div class="cr" id="bcRow" style="display:none">
+          <label>Back Color</label><input type="color" id="bcCol" value="#1d3557" oninput="render()">
+        </div>
+        <div class="cr" id="borderColorRow">
+          <label>Border Color</label><input type="color" id="borderCol" value="#333333" oninput="render()">
+        </div>
+        <div class="cr">
+          <label>Back Text</label><input type="text" id="btxt" value="SPELL" style="width:90px" oninput="render()">
+        </div>
+        <div style="border-top:1px solid var(--bdr);margin-top:6px;padding-top:6px;">
+          <div style="font-family:'Cinzel',serif;font-size:.6rem;color:var(--acc);margin-bottom:5px;letter-spacing:1px;">SHOW ON BACK</div>
+          <div class="slr"><label>Level</label><input type="checkbox" id="bkLvl" checked onchange="render()" style="width:auto"></div>
+          <div class="slr"><label>School</label><input type="checkbox" id="bkSch" checked onchange="render()" style="width:auto"></div>
+          <div class="slr"><label>Category</label><input type="checkbox" id="bkCat" onchange="render()" style="width:auto"></div>
+          <div class="slr"><label>Class(es)</label><input type="checkbox" id="bkCls" onchange="render()" style="width:auto"></div>
+        </div>
+      </div>
+    </div></div></div>
+      <div class="rp-tc" id="rp-colors">
+      <div class="ss"><h3>🖊️ Class Colors</h3><div class="c2" id="clsg"></div></div>
+      <div class="ss"><h3>🏫 School Colors</h3><div class="c2" id="schg"></div></div>
+      <div class="ss fw">
+        <h3>📝 Options</h3>
+        <div class="slr"><label>Show Conc/Ritual Badges</label><input type="checkbox" id="shB" checked onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Show Higher Levels</label><input type="checkbox" id="shH" checked onchange="render()" style="width:auto"></div>
+        <div class="slr"><label>Bold dice in text (2d6)</label><input type="checkbox" id="boldDice" checked onchange="render()" style="width:auto"></div>
+      </div>
+    </div></div></div>
+      <div class="rp-tc" id="rp-json"><div class="ja">
+      <div class="jt">
+        <span id="ji">0 spells</span><div style="flex:1"></div>
+        <select id="jf" style="width:auto" onchange="updJ()">
+          <option value="full">Full</option><option value="names">Names</option>
+          <option value="compact">Compact</option><option value="roll20">Roll20</option>
+        </select>
+        <button class="btn sm pr" onclick="cpJ()">📋 Copy</button>
+        <button class="btn sm" onclick="dlJ()">⬇️ .json</button>
+      </div>
+      <pre class="jo" id="jo">// Select spells</pre>
+    </div>
+  </div>
+</div>
+</div>
+<!-- Modal -->
+<div class="mo" id="addMo">
+  <div class="md">
+    <h2>✨ Custom Spell</h2>
+    <div class="frow">
+      <div class="fg"><label>Name *</label><input type="text" id="fn"></div>
+      <div class="fg"><label>Level</label><select id="fl"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>School</label><select id="fsc"><option>Evocation</option><option>Abjuration</option><option>Conjuration</option><option>Divination</option><option>Enchantment</option><option>Illusion</option><option>Necromancy</option><option>Transmutation</option></select></div>
+      <div class="fg"><label>Mechanic</label><select id="fmech"><option value="ATK">ATK</option><option value="SAVE">SAVE</option><option value="AUTO">Auto</option><option value="SELF">Self</option><option value="UTIL">Util</option></select></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Save Attribute (if SAVE)</label><select id="fsav"><option value="">—</option><option>STR</option><option>DEX</option><option>CON</option><option>INT</option><option>WIS</option><option>CHA</option></select></div>
+      <div class="fg"><label>Category</label><select id="fcat"><option>Damage</option><option>AOE</option><option>CC</option><option>Buff</option><option>Heal</option><option>Utility</option><option>Charm</option><option>Defense</option><option>Summon</option></select></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Casting Time</label><input type="text" id="fct" value="1 Action"></div>
+      <div class="fg"><label>Range</label><input type="text" id="fra" value="60 ft"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Components</label><input type="text" id="fco" value="V, S"></div>
+      <div class="fg"><label>Duration</label><input type="text" id="fdu" value="Instantaneous"></div>
+    </div>
+    <div class="fg"><label>Classes</label><div class="ccb" id="fcc"></div></div>
+    <div class="fg"><label>Description *</label><textarea id="fde"></textarea></div>
+    <div class="fg"><label>At Higher Levels</label><textarea id="fhi" style="height:45px"></textarea></div>
+    <div class="frow">
+      <div class="fg"><label><input type="checkbox" id="fri" style="width:auto"> Ritual</label></div>
+      <div class="fg"><label><input type="checkbox" id="fconc" style="width:auto"> Concentration</label></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn pr" onclick="saveSp()">Add Spell</button>
+    </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div><script>
+const CLC={Bard:'#6B21A8',Cleric:'#92400E',Druid:'#166534',Paladin:'#1D4ED8',Ranger:'#065F46',Sorcerer:'#991B1B',Warlock:'#3B0764',Wizard:'#1E3A5F'};
+const CLI={Bard:'🎵',Cleric:'✝️',Druid:'🌿',Paladin:'⚔️',Ranger:'🏹',Sorcerer:'🔥',Warlock:'👁️',Wizard:'⭐'};
+const CLA={Bard:'Brd',Cleric:'Clr',Druid:'Drd',Paladin:'Pal',Ranger:'Rng',Sorcerer:'Sor',Warlock:'Wlk',Wizard:'Wiz'};
+const SCH={Abjuration:'#1E3A5F',Conjuration:'#14532D',Divination:'#78350F',Enchantment:'#4A044E',Evocation:'#7F1D1D',Illusion:'#1E1B4B',Necromancy:'#111827',Transmutation:'#451A03'};
+let CAT_COLORS={Damage:'#b91c1c',AOE:'#c2410c',CC:'#4338ca',Buff:'#065f46',Heal:'#065f46',Utility:'#374151',Charm:'#6b21a8',Defense:'#1d4ed8',Summon:'#92400e'};
+let CC_={...CLC},SC_={...SCH};
+let cMode='class',bMode='hatch',sel=new Set(),filt_=[];
+let SPELLS=[];
+
+// ── 5etools → SpellForge transform ────────────────────────────────
+const SCHOOL_MAP={A:'Abjuration',C:'Conjuration',D:'Divination',E:'Enchantment',V:'Evocation',I:'Illusion',N:'Necromancy',T:'Transmutation'};
+const KNOWN_CLASSES=new Set(['Bard','Cleric','Druid','Paladin','Ranger','Sorcerer','Warlock','Wizard','Artificer']);
+
+function stripMkp(t){
+  if(!t)return'';
+  return t.replace(/\{@\w+\s+([^|}]+?)(?:\|[^}]*)?\}/g,'$1').replace(/\{@\w+\s+([^}]+)\}/g,'$1').trim();
+}
+function flatEnt(entries){
+  if(!entries)return'';
+  return entries.map(e=>{
+    if(typeof e==='string')return stripMkp(e);
+    if(e&&e.type==='list'&&e.items)return e.items.map(i=>typeof i==='string'?'• '+stripMkp(i):(i.name?`• ${i.name}. ${flatEnt(i.entries||[])}`:flatEnt(i.entries||[]))).join('\n');
+    if(e&&e.type==='table')return e.caption?`[${e.caption}]`:'[Table]';
+    if(e&&e.name&&e.entries)return`\n${e.name}.\n${flatEnt(e.entries)}`;
+    if(e&&e.entries)return flatEnt(e.entries);
+    return'';
+  }).filter(Boolean).join('\n');
+}
+function fmtTime(t){
+  if(!t||!t.length)return'—';
+  const u={action:'Action',bonus:'Bonus Action',reaction:'Reaction',minute:'Minute',hour:'Hour'}[t[0].unit]||t[0].unit;
+  return`${t[0].number} ${u}`;
+}
+function fmtRange(r){
+  if(!r)return'—';
+  if(r.type==='special')return'Special';
+  if(r.type==='point'){
+    const d=r.distance;
+    if(!d)return'—';
+    if(d.type==='self')return'Self';
+    if(d.type==='touch')return'Touch';
+    if(d.type==='sight')return'Sight';
+    if(d.type==='unlimited')return'Unlimited';
+    return`${d.amount} ft`;
+  }
+  const d=r.distance;
+  const sfx={radius:'radius',emanation:'emanation',cone:'cone',line:'line'}[r.type]||r.type;
+  return d?`Self (${d.amount} ft ${sfx})`:'Self';
+}
+function fmtComp(c){
+  if(!c)return'—';
+  const p=[];
+  if(c.v)p.push('V');
+  if(c.s)p.push('S');
+  if(c.m)p.push(typeof c.m==='string'?`M (${c.m})`:'M');
+  return p.join(', ')||'—';
+}
+function fmtDur(d){
+  if(!d||!d.length)return'—';
+  const x=d[0];
+  if(x.type==='instant')return'Instant';
+  if(x.type==='permanent')return'Permanent';
+  if(x.type==='special')return'Special';
+  if(x.type==='timed'){
+    const s={round:'rnd',minute:'min',hour:'hr',day:'day',week:'wk',year:'yr'}[x.duration.type]||x.duration.type;
+    return(x.concentration?'Conc, ':'')+`${x.duration.amount} ${s}`;
+  }
+  return'—';
+}
+function deriveMech(s){
+  if(s.spellAttack)return'ATK';
+  if(s.savingThrow&&s.savingThrow.length)return'SAVE';
+  if(s.damageInflict||s.healingInflict)return'AUTO';
+  return'UTIL';
+}
+function deriveCat(s){
+  if(s.damageInflict&&s.damageInflict.length)return'Damage';
+  if(s.healingInflict)return'Heal';
+  const txt=flatEnt(s.entries).toLowerCase();
+  if(txt.includes('charmed')||txt.includes('frightened'))return'Charm';
+  if(txt.includes('summon')||txt.includes('conjure'))return'Summon';
+  return'Utility';
+}
+function deriveCats(s){
+  const c=new Set([deriveCat(s)]);
+  if(s.areaTags&&s.areaTags.some(t=>['S','R','Q','C','L','W','N','MT'].includes(t)))c.add('AOE');
+  if(s.conditionInflict&&s.conditionInflict.some(x=>['paralyzed','stunned','restrained','incapacitated','prone','blinded','deafened','petrified'].includes(x)))c.add('CC');
+  if(s.conditionInflict&&s.conditionInflict.some(x=>['charmed','frightened'].includes(x)))c.add('Charm');
+  if(s.healingInflict)c.add('Heal');
+  if(s.damageInflict&&s.damageInflict.length)c.add('Damage');
+  return[...c];
+}
+function xfSpell(s,classMap){
+  const desc=flatEnt(s.entries);
+  const firstDot=desc.search(/[.!?]/);
+  const descShort=firstDot>0?desc.slice(0,firstDot+1):desc.slice(0,140)+'…';
+  const saveArr=s.savingThrow||[];
+  const saveAttr=saveArr.length?saveArr[0].slice(0,3).toUpperCase():null;
+  const classEntry=(classMap[s.name]&&classMap[s.name].class)||[];
+  const classes=classEntry
+    .filter(c=>c.source==='XPHB'&&KNOWN_CLASSES.has(c.name))
+    .map(c=>c.name)
+    .filter((v,i,a)=>a.indexOf(v)===i);
+  return{
+    id:s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+    name:s.name,level:s.level,
+    school:SCHOOL_MAP[s.school]||s.school,
+    ct:fmtTime(s.time),range:fmtRange(s.range),
+    comp:fmtComp(s.components),dur:fmtDur(s.duration),
+    conc:(s.duration||[]).some(d=>d.concentration),
+    ritual:s.meta?.ritual??false,
+    mech:deriveMech(s),saveAttr,
+    cat:deriveCat(s),cats:deriveCats(s),
+    classes,desc,descShort,
+    higher:s.entriesHigherLevel?flatEnt(s.entriesHigherLevel):null,
+  };
+}
+// ──────────────────────────────────────────────────────────────────
+
+function init(){
+  document.getElementById('clsg').innerHTML=Object.entries(CC_).map(([c,v])=>
+    `<div class="cr"><label>${CLI[c]} ${c}</label><input type="color" value="${v}" oninput="CC_['${c}']=this.value;render()"></div>`).join('');
+  document.getElementById('schg').innerHTML=Object.entries(SC_).map(([s,v])=>
+    `<div class="cr"><label>${s}</label><input type="color" value="${v}" oninput="SC_['${s}']=this.value;render()"></div>`).join('');
+  buildCatCols();
+  document.getElementById('fcc').innerHTML=Object.keys(CLC).map(c=>
+    `<div class="ccbi" onclick="this.classList.toggle('active')"><input type="checkbox" value="${c}" style="display:none">${CLI[c]} ${c}</div>`).join('');
+  filt_=[...SPELLS];
+  renderList();
+  updJ();
+}
+
+function buildCatCols(){
+  document.getElementById('catcols').innerHTML=Object.entries(CAT_COLORS).map(([k,v])=>
+    `<div class="tr"><label>${k}</label><span class="tp" style="background:${v}" id="ctag_${k}">${k}</span><input type="color" value="${v}" oninput="CAT_COLORS['${k}']=this.value;document.getElementById('ctag_${k}').style.background=this.value;render()"></div>`).join('');
+}
+
+function filt(){
+  const s=document.getElementById('srch').value.toLowerCase();
+  const cl=document.getElementById('cfil').value;
+  const lv=document.getElementById('lfil').value;
+  const sc=document.getElementById('sfil').value;
+  const mch=document.getElementById('mfil').value;
+  const cat=document.getElementById('catfil').value;
+  filt_=SPELLS.filter(sp=>{
+    if(s&&!sp.name.toLowerCase().includes(s))return false;
+    if(cl&&!sp.classes.includes(cl))return false;
+    if(lv!==''&&sp.level!=lv)return false;
+    if(sc&&sp.school!==sc)return false;
+    if(mch&&sp.mech!==mch)return false;
+    if(cat&&sp.cat!==cat)return false;
+    return true;
+  });
+  renderList();
+}
+
+function renderList(){
+  const lbls=['Cantrips','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
+  let html='',cur=-1;
+  filt_.forEach(sp=>{
+    if(sp.level!==cur){cur=sp.level;html+=`<div class="lh">${lbls[sp.level]}</div>`;}
+    const on=sel.has(sp.id);
+    const dots=sp.classes.map(c=>`<div class="cdot" style="background:${CC_[c]||'#666'}" title="${c}"></div>`).join('');
+    const mc=sp.mech==='ATK'?'#b91c1c':sp.mech==='SAVE'?'#c2410c':'transparent';
+    const mshow=(sp.mech==='ATK'||sp.mech==='SAVE')?`<span style="background:${mc};color:#fff;padding:0 3px;border-radius:2px;font-size:.46rem;font-family:'Cinzel',serif;flex-shrink:0;line-height:1.6">${sp.mech}</span>`:'';
+    html+=`<div class="si ${on?'sel':''}" onclick="tog('${sp.id}')">
+      <input type="checkbox" ${on?'checked':''} onclick="event.stopPropagation()">
+      <span class="sn">${sp.name}</span>
+      <div class="cdots">${dots}</div>
+      ${mshow}
+      <span class="slb">${sp.level}</span>
+    </div>`;
+  });
+  if(!filt_.length)html='<div style="padding:10px;text-align:center;color:var(--txt-d);font-size:.8rem">Keine Zauber gefunden</div>';
+  document.getElementById('sl').innerHTML=html;
+  document.getElementById('cnt').textContent=filt_.length;
+}
+
+function selAll(){filt_.forEach(s=>sel.add(s.id));upd();}
+function clrAll(){sel.clear();upd();}
+function tog(id){sel.has(id)?sel.delete(id):sel.add(id);upd();}
+function upd(){renderList();render();updJ();document.getElementById('selcnt').textContent=`${sel.size} selected`;}
+
+// Bold dice/numbers: 2d8, 1d4+1, DC 15, +2, etc.
+function boldDiceInText(txt){
+  return txt
+    .replace(/\b(\d+d\d+(?:[+-]\d+)?)\b/g,'<strong>$1</strong>')
+    .replace(/\bDC\s*(\d+)/gi,'DC <strong>$1</strong>')
+    .replace(/([+-]\d+)(?=\s*(AC|HP|ft|to|mph|lb))/g,'<strong>$1</strong>');
+}
+
+// Auto-scale font: estimate char density, scale up if text is short
+function autoFontSize(desc,maxPx){
+  if(!document.getElementById('autoScale').checked) return maxPx+'px';
+  const len=desc.replace(/\n/g,' ').length;
+  const minPx=Math.max(maxPx*0.78, maxPx-1.8); // floor: never too tiny
+  if(len<100)  return Math.min(maxPx*1.6,  maxPx+4.5)+'px';
+  if(len<200)  return Math.min(maxPx*1.3,  maxPx+3)+'px';
+  if(len<320)  return maxPx+'px';
+  if(len<480)  return Math.max(maxPx*0.91, maxPx-1.2)+'px';
+  if(len<700)  return Math.max(maxPx*0.85, minPx)+'px';
+  return minPx+'px'; // very long spells: at floor
+}
+
+// Abbreviate casting time for stats row
+function abbrCT(ct){
+  return ct
+    .replace(/1 Action/,'1 Act.')
+    .replace(/1 Bonus Action/,'Bonus Act.')
+    .replace(/1 Reaction/,'Reaction')
+    .replace(/1 Minute/,'1 Min.')
+    .replace(/10 Minutes/,'10 Min.')
+    .replace(/1 Hour/,'1 Hour')
+    .replace(/12 Hours/,'12 Hrs')
+    .replace(/1 Act or 8 hrs/,'1A/8H');
+}
+
+function getHC(sp){
+  if(cMode==='black')return'#111';
+  if(cMode==='custom')return document.getElementById('scCol').value;
+  if(cMode==='school')return SC_[sp.school]||'#333';
+  if(cMode==='cat')return CAT_COLORS[sp.cat]||'#333';
+  return CC_[sp.classes[0]]||'#333';
+}
+
+function mkCard(sp){
+  const hc=getHC(sp);
+  const shH=document.getElementById('shH').checked;
+  const shB=document.getElementById('shB').checked;
+  const shSch=document.getElementById('shSch').checked;
+  const shCat=document.getElementById('shCat').checked;
+  const abbrCls=document.getElementById('abbrCls').checked;
+  const bDice=document.getElementById('boldDice').checked;
+  const showATK=document.getElementById('showATK').checked;
+  const showSAVE=document.getElementById('showSAVE').checked;
+  const catTop=document.getElementById('catTop')&&document.getElementById('catTop').checked;
+  const statsBold=document.getElementById('statsBold').checked;
+
+  // Body size auto-scale
+  const bodyMaxPx=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--body-max'))*16||9;
+  
+  // Mech tag (only ATK and SAVE)
+  let mechHtml='';
+  if(sp.mech==='ATK'&&showATK){
+    const ac=document.getElementById('atkCol').value;
+    mechHtml=`<div class="cf-mech" style="background:${ac}"><span class="cf-mech-l">ATK</span></div>`;
+  } else if(sp.mech==='SAVE'&&showSAVE){
+    const sc2=document.getElementById('saveCol').value;
+    const attr=sp.saveAttr||'';
+    mechHtml=`<div class="cf-mech" style="background:${sc2}"><span class="cf-mech-l">SAVE</span>${attr?`<span class="cf-mech-a">${attr}</span>`:''}</div>`;
+  }
+  // Multi-category pills — always shown in badge row (not footer)
+  const spCats=sp.cats&&sp.cats.length?sp.cats:[sp.cat];
+  const catTopHtml=''; // removed from header
+  const mechStack=mechHtml?`<div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0">${mechHtml}</div>`:'';
+
+  let dur=sp.dur;
+  if(sp.conc){dur=dur.replace(/Conc(entration)?,?\s*/i,'');dur=`<b>C</b> ${dur}`;}
+  
+  let badges='';
+  {
+    const hasBadge=shB&&(sp.conc||sp.ritual);
+    const catPills=shCat?spCats.map(c=>`<span class="cat-pill" style="background:${CAT_COLORS[c]||'#555'}">${c}</span>`).join(''):'';
+    if(hasBadge||catPills){
+      badges='<div class="cf-bd" style="display:flex;align-items:center;gap:3px;flex-wrap:wrap">';
+      if(shB&&sp.conc)badges+='<span class="cf-bg co">CONC</span>';
+      if(shB&&sp.ritual)badges+='<span class="cf-bg ri">RITUAL</span>';
+      if(catPills)badges+=`<span class="cf-bd-cat">${catPills}</span>`;
+      badges+='</div>';
+    }
+  }
+
+  const useShort=window._shortMode||(sp._shortCard===true);
+  const rawDesc=useShort&&sp.descShort?sp.descShort:sp.desc;
+  let descText=rawDesc.replace(/\\n/g,'\n');
+  if(bDice)descText=boldDiceInText(descText);
+  // Convert newlines to <br> for display
+  // Render **bold** markers from named entries
+  descText=descText.replace(/\*\*([^*]+):\*\*/g,'<strong>$1:</strong>');
+  descText=descText.replace(/\n/g,'<br>');
+  
+  const fsz=autoFontSize(sp.desc,bodyMaxPx);
+  
+  const higher=shH&&sp.higher&&!useShort?`<div class="cf-hi" style="font-size:${fsz}"><strong>Higher:</strong> ${sp.higher}</div>`:'';
+
+  // Classes: abbreviated if option on
+  const clsStr=sp.classes.map(c=>abbrCls?(CLA[c]||c):c).join(' ');
+
+  // Footer: school color
+  const schColor=SC_[sp.school]||'#333';
+  const schHtml=shSch?`<span class="cf-sch" style="color:${schColor}">${sp.school}</span>`:'';
+  const catColor=CAT_COLORS[sp.cat]||'#666';
+  const catHtml=''; // category now shown as pills in badge row
+
+  // Stats row: bold option
+  const sv_style=statsBold?'font-weight:800':'';
+
+  // BACK
+  const sym=document.getElementById('bsym').value;
+  const btxt=document.getElementById('btxt').value;
+  const bkLvl=document.getElementById('bkLvl').checked;
+  const bkSch=document.getElementById('bkSch').checked;
+  const bkCat=document.getElementById('bkCat').checked;
+  const bkCls=document.getElementById('bkCls').checked;
+  const borderCol=document.getElementById('borderCol').value;
+  const bcColVal=document.getElementById('bcCol').value;
+
+  let bkStyle,bkBorderStyle,bkTextColor,showPat;
+  switch(bMode){
+    case'border':
+      bkStyle=`background:#fff`;bkTextColor='#222';showPat=false;
+      bkBorderStyle=`border:3px solid ${borderCol}`;break;
+    case'colored':
+      bkStyle=`background:${bcColVal}`;bkTextColor='#fff';showPat=false;bkBorderStyle='';break;
+    case'symbol':
+      bkStyle='background:#fff';bkTextColor='#222';showPat=false;bkBorderStyle='';break;
+    case'blank':
+      bkStyle='background:#fff';bkTextColor='#222';showPat=false;bkBorderStyle='';break;
+    default:// hatch
+      bkStyle='background:#fff';bkTextColor='#222';showPat=true;bkBorderStyle='';
+  }
+
+  let bkInfoHtml='';
+  if(bkLvl||bkSch||bkCat||bkCls){
+    bkInfoHtml='<div class="cbk-info">';
+    if(bkLvl){const lvlStr=sp.level===0?'Cantrip':`Level ${sp.level}`;bkInfoHtml+=`<div class="cbk-info-row"><span class="cbk-lvl" style="color:${bkTextColor}">${lvlStr}</span></div>`;}
+    if(bkSch)bkInfoHtml+=`<div class="cbk-info-row" style="color:${bkTextColor};font-style:italic">${sp.school}</div>`;
+    if(bkCat)bkInfoHtml+=`<div class="cbk-info-row"><span style="background:${catColor};color:#fff;padding:1px 5px;border-radius:3px;font-size:.42rem">${sp.cat}</span></div>`;
+    if(bkCls){const c=sp.classes.map(x=>CLA[x]||x).join(' ');bkInfoHtml+=`<div class="cbk-info-row" style="color:${bkTextColor};opacity:.7">${c}</div>`;}
+    bkInfoHtml+='</div>';
+  }
+
+  return `<div class="cw" data-spell-id="${sp.id}" onclick="flipC(this)"><button class="card-zoom-btn" onclick="openDetail('${sp.id}',event)" title="Detail anzeigen">🔍 Detail</button><div class="spell-card">
+  <div class="cf">
+    <div class="cf-h" style="background:${hc}">
+      <div class="cf-l" id="badge_${sp.id}">${sp.level}</div>
+      <div class="cf-n">${sp.name}</div>
+      ${mechStack}
+    </div>
+    <div style="height:1.5px;background:${hc};flex-shrink:0"></div>
+    <div class="cf-s">
+      <div class="cf-si"><div class="cf-sl">Range</div><div class="cf-sv" style="${sv_style}">${sp.range}</div></div>
+      <div class="cf-sp"></div>
+      <div class="cf-si"><div class="cf-sl">Comp.</div><div class="cf-sv" style="${sv_style}">${sp.comp}</div></div>
+      <div class="cf-sp"></div>
+      <div class="cf-si"><div class="cf-sl">Duration</div><div class="cf-sv" style="${sv_style}">${dur}</div></div>
+      <div class="cf-sp"></div>
+      <div class="cf-si"><div class="cf-sl">Cast Time</div><div class="cf-sv" style="${sv_style}">${abbrCT(sp.ct)}</div></div>
+    </div>
+    <div class="cf-b">
+      ${badges}
+      <div class="cf-de" style="font-size:${fsz}">${descText}</div>
+      ${higher}
+    </div>
+    <div class="cf-f">
+      <span class="cf-cls">${clsStr}</span>
+      ${catHtml}
+      ${schHtml}
+      ${sp.descShort&&sp.descShort!==sp.desc?`<span class="cf-short-btn" onclick="toggleShortCard(this,event)" title="Toggle short/full">⇄</span>`:''}
+    </div>
+  </div>
+  <div class="cbk" style="${bkStyle}">
+    <div class="cbk-i" style="${bkBorderStyle}">
+      ${showPat?'<div class="cbk-p"></div>':''}
+      ${bMode!=='blank'?`<div class="cbk-s">${sym}</div>`:''}
+      ${btxt?`<div class="cbk-t" style="color:${bkTextColor}">${btxt}</div>`:''}
+      <div class="cbk-o" style="color:${bkTextColor}">✦ ✦ ✦</div>
+      ${bkInfoHtml}
+    </div>
+  </div>
+</div></div>`;
+}
+
+function render(){
+  const grid=document.getElementById('cg');
+  const em=document.getElementById('es');
+  document.getElementById('selcnt').textContent=`${sel.size} selected`;
+  const picked=SPELLS.filter(s=>sel.has(s.id));
+  if(!picked.length){em.style.display='';grid.innerHTML='';return;}
+  em.style.display='none';
+  grid.innerHTML=picked.map(mkCard).join('');
+  // re-apply badge sizes
+  const bs=document.getElementById('badgeSzSlider');
+  const bfs=document.getElementById('badgeFontSlider');
+  if(bs)updBadge(bs.value);
+  if(bfs)updLvlFont(bfs.value);
+  updJ();
+}
+
+function flipC(w){w.querySelector('.spell-card').classList.toggle('show-back');}
+function allFront(){document.querySelectorAll('.spell-card').forEach(c=>c.classList.remove('show-back'));}
+function allBack(){document.querySelectorAll('.spell-card').forEach(c=>c.classList.add('show-back'));}
+
+function updSz(){
+  const w=parseInt(document.getElementById('csz').value);
+  document.documentElement.style.setProperty('--card-w',w+'px');
+  document.documentElement.style.setProperty('--card-h',Math.round(w*1.4)+'px');
+  render();
+}
+function setProp(p,v){document.documentElement.style.setProperty(p,v);}
+
+function updBadge(v){
+  document.documentElement.style.setProperty('--badge-sz',v+'px');
+  document.querySelectorAll('.cf-l').forEach(e=>{e.style.width=v+'px';e.style.height=v+'px';e.style.minWidth=v+'px';});
+}
+function updLvlFont(v){
+  document.querySelectorAll('.cf-l').forEach(e=>e.style.fontSize=v+'px');
+}
+function setNameFont(v){
+  document.documentElement.style.setProperty('--name-font',v);
+  document.querySelectorAll('.cf-n').forEach(e=>e.style.fontFamily=v);
+}
+function setNameWt(v){
+  document.documentElement.style.setProperty('--name-wt',v);
+  document.querySelectorAll('.cf-n').forEach(e=>e.style.fontWeight=v);
+}
+function setNameSz(v){
+  // max size in px → CSS var
+  document.documentElement.style.setProperty('--name-sz-max',v+'px');
+  document.querySelectorAll('.cf-n').forEach(e=>e.style.fontSize=v*.0625+'rem');
+}
+
+function setCM(m){
+  cMode=m;
+  document.querySelectorAll('#cmg label').forEach(l=>l.classList.remove('active'));
+  document.querySelector(`#cmg input[value="${m}"]`).parentElement.classList.add('active');
+  document.getElementById('scRow').style.display=m==='custom'?'flex':'none';
+  render();
+}
+function setBM(m){
+  bMode=m;
+  document.querySelectorAll('#bmg label').forEach(l=>l.classList.remove('active'));
+  document.querySelector(`#bmg input[value="${m}"]`).parentElement.classList.add('active');
+  const showBc=m==='colored';
+  const showBorder=m==='border';
+  document.getElementById('bcRow').style.display=showBc?'flex':'none';
+  document.getElementById('borderColorRow').style.display=(showBorder||m==='hatch'||m==='symbol')?'flex':'none';
+  render();
+}
+
+function showTab(n,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  btn.classList.add('active');
+  if(n==='json')updJ();
+}
+
+function updJ(){
+  const fmt=document.getElementById('jf').value;
+  const picked=SPELLS.filter(s=>sel.has(s.id));
+  document.getElementById('ji').textContent=`${picked.length} spells`;
+  if(!picked.length){document.getElementById('jo').textContent='// Keine Zauber ausgewählt';return;}
+  let data;
+  if(fmt==='names')data=picked.map(s=>s.name);
+  else if(fmt==='compact')data=picked.map(s=>({name:s.name,level:s.level,school:s.school,mech:s.mech,saveAttr:s.saveAttr,cat:s.cat,classes:s.classes,ct:s.ct,range:s.range,comp:s.comp,dur:s.dur,conc:s.conc,ritual:s.ritual}));
+  else if(fmt==='roll20')data=picked.map(s=>({name:s.name,type:'spell',level:s.level,school:s.school[0].toLowerCase(),castingtime:s.ct,range:s.range,components:s.comp,duration:s.dur,description:s.desc,concentration:s.conc,ritual:s.ritual,classes:s.classes.join(',').toLowerCase()}));
+  else data=picked;
+  document.getElementById('jo').textContent=JSON.stringify(data,null,2);
+}
+function cpJ(){navigator.clipboard.writeText(document.getElementById('jo').textContent).then(()=>notif('✓ Kopiert!'));}
+function dlJ(){const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([document.getElementById('jo').textContent],{type:'application/json'})),download:'spells.json'});a.click();notif('⬇️ Heruntergeladen');}
+
+function openAdd(){document.getElementById('addMo').classList.add('open');}
+function closeMo(){document.getElementById('addMo').classList.remove('open');}
+function saveSp(){
+  const name=document.getElementById('fn').value.trim();
+  const desc=document.getElementById('fde').value.trim();
+  if(!name||!desc){alert('Name und Beschreibung sind Pflicht');return;}
+  const classes=[...document.querySelectorAll('#fcc .ccbi.active')].map(el=>el.querySelector('input').value);
+  const cat=document.getElementById('fcat').value;
+  // add custom cat color if new
+  if(!CAT_COLORS[cat])CAT_COLORS[cat]='#374151';
+  buildCatCols();
+  const sp={
+    id:'c-'+Date.now(),name,level:+document.getElementById('fl').value,
+    school:document.getElementById('fsc').value,
+    mech:document.getElementById('fmech').value,
+    saveAttr:document.getElementById('fsav').value||null,
+    cat,
+    ct:document.getElementById('fct').value,
+    range:document.getElementById('fra').value,
+    comp:document.getElementById('fco').value,
+    dur:document.getElementById('fdu').value,
+    classes:classes.length?classes:['Wizard'],
+    desc,higher:document.getElementById('fhi').value||null,
+    ritual:document.getElementById('fri').checked,
+    conc:document.getElementById('fconc').checked,custom:true
+  };
+  SPELLS.push(sp);SPELLS.sort((a,b)=>a.level-b.level||a.name.localeCompare(b.name));
+  sel.add(sp.id);closeMo();filt();render();
+  notif(`✨ "${name}" hinzugefügt!`);
+}
+
+function notif(msg){
+  const el=document.getElementById('notif');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// add slider id attributes after DOM ready
+document.addEventListener('DOMContentLoaded',()=>{
+  // tag badge size sliders with IDs for re-render
+  const sliders=document.querySelectorAll('.slr input[type=range]');
+  sliders.forEach(s=>{
+    if(s.oninput&&s.oninput.toString().includes('updBadge'))s.id='badgeSzSlider';
+    if(s.oninput&&s.oninput.toString().includes('updLvlFont'))s.id='badgeFontSlider';
+  });
+});
+
+// ── Print helper: chunk cards into pages of 9 ────────────────
+function doPrint(){
+  const cg = document.getElementById('cg');
+  const cards = [...cg.children];
+  if(!cards.length){ window.print(); return; }
+  // Remove existing page-groups if any
+  document.querySelectorAll('.pg').forEach(pg=>{
+    pg.replaceWith(...pg.children);
+  });
+  // Re-chunk
+  const pages = [];
+  for(let i=0;i<cards.length;i+=9){
+    const pg = document.createElement('div');
+    pg.className = 'cg pg';
+    cards.slice(i,i+9).forEach(c=>pg.appendChild(c));
+    pages.push(pg);
+  }
+  cg.replaceWith(...pages);
+  window.print();
+  // Restore single grid after printing
+  setTimeout(()=>{
+    const all = [];
+    document.querySelectorAll('.pg').forEach(pg=>{
+      all.push(...pg.children);
+    });
+    const newCg = document.createElement('div');
+    newCg.className='cg';
+    newCg.id='cg';
+    all.forEach(c=>newCg.appendChild(c));
+    document.querySelector('.ca').innerHTML='';
+    document.querySelector('.ca').appendChild(document.getElementById('es')||document.createElement('div'));
+    document.querySelector('.ca').appendChild(newCg);
+  }, 2000);
+}
+
+
+
+// ════ PANEL SYSTEM ════════════════════════════════════════════════
+let _activePanel=null;
+
+function openPanel(name, btn){
+  const panel=document.getElementById('rightPanel');
+  const cardsMain=document.getElementById('tab-preview');
+  // Activate correct rp-tab
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+  const rpt=document.getElementById('rpt-'+name);
+  if(rpt)rpt.classList.add('active');
+  // Activate correct rp-tc
+  document.querySelectorAll('.rp-tc').forEach(t=>t.classList.remove('active'));
+  const rptc=document.getElementById('rp-'+name);
+  if(rptc)rptc.classList.add('active');
+  // Tab bar state
+  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('panel-active'));
+  if(btn)btn.classList.add('panel-active');
+  document.getElementById('tbCards').classList.remove('active');
+  // Open panel
+  if(!panel.classList.contains('open')){
+    panel.classList.add('open');
+    cardsMain.classList.add('panel-open');
+  }
+  _activePanel=name;
+  if(name==='json')updJ();
+}
+
+function switchPanel(name,btn){
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelectorAll('.rp-tc').forEach(t=>t.classList.remove('active'));
+  const tc=document.getElementById('rp-'+name);
+  if(tc)tc.classList.add('active');
+  _activePanel=name;
+  if(name==='json')updJ();
+}
+
+function closePanel(){
+  const panel=document.getElementById('rightPanel');
+  const cardsMain=document.getElementById('tab-preview');
+  panel.classList.remove('open');
+  cardsMain.classList.remove('panel-open');
+  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('panel-active'));
+  document.getElementById('tbCards').classList.add('active');
+  _activePanel=null;
+}
+
+function showCardsOnly(btn){
+  if(_activePanel){closePanel();return;}
+  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('active','panel-active'));
+  btn.classList.add('active');
+}
+
+// Legacy showTab — now redirects to panel system
+function showTab(name, btn){
+  if(name==='preview') showCardsOnly(btn);
+  else openPanel(name, btn);
+}
+
+// ════ SHORT TOGGLE ════════════════════════════════════════════════
+window._shortMode=false;
+function toggleShortAll(el){
+  window._shortMode=!window._shortMode;
+  const toggle=el||document.getElementById('shortToggle');
+  if(toggle){
+    toggle.textContent=window._shortMode?'📜 Voll':'📄 Kurz';
+    toggle.classList.toggle('on',window._shortMode);
+  }
+  render();
+}
+function toggleShortCard(btnEl,e){
+  e.stopPropagation();
+  const id=btnEl.closest('.cw').dataset.spellId;
+  const sp=SPELLS.find(s=>s.id===id);
+  if(!sp)return;
+  sp._shortCard=!sp._shortCard;
+  const cw=btnEl.closest('.cw');
+  const fresh=document.createElement('div');
+  fresh.innerHTML=mkCard(sp);
+  const nw=fresh.firstElementChild;
+  cw.replaceWith(nw);
+}
+
+// ════ CARD DETAIL MODAL ═══════════════════════════════════════════
+function openDetail(id,e){
+  e.stopPropagation();
+  const sp=SPELLS.find(s=>s.id===id);
+  if(!sp)return;
+  const hc=getHC(sp);
+  // Head
+  const catPills=(sp.cats||[sp.cat]).map(c=>`<span class="cdm-tag" style="background:${CAT_COLORS[c]||'#555'};color:#fff">${c}</span>`).join('');
+  const mechTag=sp.mech==='ATK'?'<span class="cdm-tag mech-atk">ATK</span>':
+                sp.mech==='SAVE'?`<span class="cdm-tag mech-save">SAVE ${sp.saveAttr||''}</span>`:'';
+  const flags=[sp.conc?'<span class="cdm-tag">Konz.</span>':'',
+               sp.ritual?'<span class="cdm-tag">Ritual</span>':''].join('');
+  document.getElementById('cdm-hdr').innerHTML=`
+    <div style="width:10px;height:10px;background:${hc};border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+    <div class="cdm-info">
+      <div class="cdm-name">${sp.name}</div>
+      <div class="cdm-tags">${sp.level===0?'<span class="cdm-tag">Zaubertrick</span>':`<span class="cdm-tag">Grad ${sp.level}</span>`}
+        <span class="cdm-tag">${sp.school}</span>${mechTag}${catPills}${flags}
+        ${sp.classes.map(c=>`<span class="cdm-tag">${c}</span>`).join('')}
+      </div>
+    </div>
+    <button class="cdm-close" onclick="closeCdm()">✕</button>`;
+  // Stats grid
+  document.getElementById('cdm-grid').innerHTML=`
+    <div class="cdm-cell"><label>Reichweite</label><span>${sp.range}</span></div>
+    <div class="cdm-cell"><label>Komponenten</label><span>${sp.comp}</span></div>
+    <div class="cdm-cell"><label>Dauer</label><span>${sp.dur}</span></div>
+    <div class="cdm-cell"><label>Wirk.-Zeit</label><span>${sp.ct}</span></div>`;
+  // Body
+  let desc=(sp.desc||'').replace(/\\n/g,'\n')
+    .replace(/\*\*([^*]+):\*\*/g,'<strong>$1:</strong>')
+    .replace(/\n/g,'<br>');
+  document.getElementById('cdm-desc').innerHTML=desc;
+  const higherEl=document.getElementById('cdm-higher');
+  if(sp.higher){
+    higherEl.style.display='';
+    higherEl.innerHTML='<strong>Auf höheren Graden:</strong> '+sp.higher.replace(/\\n/g,'\n').replace(/\n/g,'<br>');
+  } else {
+    higherEl.style.display='none';
+  }
+  document.getElementById('cdm').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCdm(){
+  document.getElementById('cdm').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCdm();});
+
+async function loadAndInit(){
+  const base=window.location.pathname.includes('/tools/')
+    ?'../data/spells/'
+    :'data/spells/';
+  try{
+    const[spellRes,srcRes]=await Promise.all([
+      fetch(base+'spells-xphb.json'),
+      fetch(base+'sources.json'),
+    ]);
+    const[spellData,sourcesData]=await Promise.all([spellRes.json(),srcRes.json()]);
+    const classMap=sourcesData['XPHB']||{};
+    SPELLS=spellData.spell.map(s=>xfSpell(s,classMap));
+    init();
+  }catch(err){
+    console.error('SpellForge: Fehler beim Laden',err);
+    const sl=document.querySelector('.spell-list');
+    if(sl)sl.innerHTML='<div style="color:#f87171;padding:12px;font-size:.85rem">⚠️ Spells konnten nicht geladen werden.<br>Bitte via lokalem Server öffnen:<br><code>npm run serve:dev</code></div>';
+  }
+}
+loadAndInit();
+</script>
+
+<div class="cdm" id="cdm" onclick="if(event.target===this)closeCdm()">
+  <div class="cdm-box">
+    <div class="cdm-hdr" id="cdm-hdr"></div>
+    <div class="cdm-grid" id="cdm-grid"></div>
+    <div class="cdm-body">
+      <div id="cdm-desc"></div>
+      <div class="cdm-higher" id="cdm-higher"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
