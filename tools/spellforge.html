@@ -166,10 +166,10 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
   body{background:white!important;margin:0;padding:0;}
   header,.sidebar,.tabs,.pt,.sw,.ja,.right-panel{display:none!important;}
   .layout{display:grid!important;grid-template-columns:0 1fr!important;height:auto!important;}
-  .mp{display:block!important;overflow:visible!important;}
+  .mp{display:block!important;overflow:visible!important;height:auto!important;}
   .tc{display:block!important;}
-  #tab-preview{display:flex!important;flex-direction:column;}
-  .ca{padding:0!important;overflow:visible!important;background:white!important;}
+  #tab-preview,.cards-main{display:block!important;overflow:visible!important;height:auto!important;min-height:0!important;}
+  .ca{padding:0!important;overflow:visible!important;height:auto!important;background:white!important;}
   .cbk{display:none!important;}
   .cf{opacity:1!important;pointer-events:none!important;}
   .show-back .cf{opacity:1!important;}
@@ -179,17 +179,15 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
 /* A4 print mode (default) */
 @media print{
   body:not(.poker-print) .cg{
-    display:grid!important;
-    grid-template-columns:repeat(3,62mm)!important;
-    grid-template-rows:repeat(3,88mm)!important;
-    gap:2mm!important;
-    width:197mm!important;
-    height:282mm!important;
-    page-break-after:always;
-    break-after:page;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:3mm!important;
+    width:auto!important;height:auto!important;
+    padding:0!important;
   }
   body:not(.poker-print) .cw{
     width:62mm!important;height:88mm!important;
+    flex-shrink:0!important;
     page-break-inside:avoid!important;break-inside:avoid!important;
     overflow:hidden!important;cursor:default!important;
   }
@@ -198,6 +196,7 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
     box-shadow:none!important;border:0.5px solid #bbb!important;overflow:hidden!important;
   }
 }
+@page{margin:8mm;}
 
 /* Poker card print mode: one card per page, 2.5 × 3.5 in */
 @media print{
@@ -1105,32 +1104,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 // ── Print helpers ─────────────────────────────────────────────
 function doPrint(){
-  const cg = document.getElementById('cg');
-  const cards = [...cg.querySelectorAll('.cw')];
-  if(!cards.length){ window.print(); return; }
-  // Chunk cards into groups of 9 for A4 (3×3 grid per page)
-  const pages = [];
-  for(let i=0;i<cards.length;i+=9){
-    const pg = document.createElement('div');
-    pg.className = 'cg pg';
-    cards.slice(i,i+9).forEach(c=>pg.appendChild(c));
-    pages.push(pg);
-  }
-  cg.replaceWith(...pages);
   window.print();
-  // Restore single #cg after printing
-  setTimeout(()=>{
-    const pgs = [...document.querySelectorAll('.pg')];
-    const all = [];
-    pgs.forEach(pg=>all.push(...pg.querySelectorAll('.cw')));
-    const newCg = document.createElement('div');
-    newCg.className='cg'; newCg.id='cg';
-    all.forEach(c=>newCg.appendChild(c));
-    if(pgs.length){
-      pgs[0].replaceWith(newCg);
-      pgs.slice(1).forEach(pg=>pg.remove());
-    }
-  }, 1500);
 }
 
 function doPokerPrint(){
@@ -1299,7 +1273,7 @@ async function loadAndInit(){
   }catch(err){
     console.error('SpellForge: Fehler beim Laden',err);
     const sl=document.querySelector('.spell-list');
-    if(sl)sl.innerHTML='<div style="color:#f87171;padding:12px;font-size:.85rem">⚠️ Spells konnten nicht geladen werden.<br>Bitte via lokalem Server öffnen:<br><code>npm run serve:dev</code></div>';
+    if(sl)sl.innerHTML='<div style="color:#f87171;padding:16px;font-size:.82rem;line-height:1.6">⚠️ <b>Spells konnten nicht geladen werden.</b><br><br>SpellForge benötigt einen lokalen Server.<br><br><b>Im Repo-Ordner ausführen:</b><br><code style="background:#1a1a2e;padding:3px 6px;border-radius:3px;font-size:.9em">npm run serve:dev</code><br><br>Dann öffnen:<br><code style="background:#1a1a2e;padding:3px 6px;border-radius:3px;font-size:.9em">http://localhost:5050/tools/spellforge.html</code></div>';
   }
 }
 loadAndInit();
