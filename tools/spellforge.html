@@ -10,7 +10,8 @@
   --bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--bdr:#374151;
   --txt:#e2e8f0;--txt-d:#94a3b8;--acc:#c9a84c;--acc2:#e8c96d;
   --card-w:200px;--card-h:280px;--hdr-h:38px;
-  --body-max:0.5625rem;--stats-sz:0.46rem;
+  --body-max:0.625rem;--stats-sz:0.5rem;
+  --stats-lbl-sz:0.44rem;--footer-sz:0.44rem;--cat-sz:0.40rem;--mech-sz:0.48rem;
   --card-r:8px;--badge-r:50%;
   --name-font:'Cinzel',serif;--name-wt:700;--body-lines:10;
 }
@@ -104,14 +105,15 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
 .cf-n{flex:1;text-align:center;font-family:var(--name-font);font-weight:var(--name-wt);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);line-height:1.15;letter-spacing:.3px;padding:0 2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 /* Mech tag top-right — only for ATK/SAVE */
 .cf-mech{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;border-radius:3px;font-family:'Cinzel',serif;color:#fff;flex-shrink:0;line-height:1.1;align-self:stretch;margin:4px 0 4px 0;min-width:28px;}
-.cf-mech-l{font-size:.44rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;}
-.cf-mech-a{font-size:.5rem;font-weight:900;letter-spacing:.5px;opacity:.85;}
+.cf-mech-l{font-size:var(--mech-sz);font-weight:700;letter-spacing:.3px;text-transform:uppercase;}
+.cf-mech-a{font-size:calc(var(--mech-sz) + .06rem);font-weight:900;letter-spacing:.5px;opacity:.85;}
 /* Stats row */
-.cf-s{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;border-bottom:1.5px solid #222;flex-shrink:0;background:#f9f9f9;}
+.cf-s{display:grid;grid-template-columns:1fr 1px 1fr;grid-template-rows:auto 1px auto;border-bottom:1.5px solid #222;flex-shrink:0;background:#f9f9f9;}
 .cf-sp{background:#ccc;margin:2px 0;}
-.cf-si{padding:2px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0;}
-.cf-sl{font-family:'Cinzel',serif;font-size:.35rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#555;line-height:1;margin-bottom:1px;white-space:nowrap;}
-.cf-sv{font-family:'IM Fell English',serif;font-size:var(--stats-sz);color:#111;line-height:1.15;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;text-align:center;}
+.cf-sp-h{grid-column:1/-1;height:1px;margin:0;background:#ccc;}
+.cf-si{padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0;}
+.cf-sl{font-family:'Cinzel',serif;font-size:var(--stats-lbl-sz);font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#555;line-height:1;margin-bottom:2px;white-space:nowrap;}
+.cf-sv{font-family:'IM Fell English',serif;font-size:var(--stats-sz);color:#111;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;text-align:center;}
 .cf-sv .cb{font-family:'Cinzel',serif;font-weight:900;font-size:.6rem;color:#b00;}
 /* Body */
 .cf-b{flex:1;padding:3px 5px 2px;overflow:hidden;display:flex;flex-direction:column;gap:1px;}
@@ -124,8 +126,8 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
 .cf-hi{font-family:'IM Fell English',serif;line-height:1.3;color:#444;font-style:italic;padding-top:2px;border-top:1px dashed #bbb;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex-shrink:0;}
 /* Footer */
 .cf-f{padding:2px 5px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid #222;background:#f5f5f5;flex-shrink:0;gap:3px;}
-.cf-cls{font-family:'Cinzel',serif;font-size:.38rem;font-weight:600;letter-spacing:.2px;color:#444;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.cf-cat{font-family:'Cinzel',serif;font-size:.34rem;font-weight:700;padding:0 3px;border-radius:2px;color:#fff;flex-shrink:0;}
+.cf-cls{font-family:'Cinzel',serif;font-size:var(--footer-sz);font-weight:600;letter-spacing:.2px;color:#444;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.cf-cat{font-family:'Cinzel',serif;font-size:var(--cat-sz);font-weight:700;padding:0 3px;border-radius:2px;color:#fff;flex-shrink:0;}
 .cf-short-btn{font-size:.5rem;cursor:pointer;opacity:.5;margin-left:auto;padding:0 2px;user-select:none;flex-shrink:0;transition:opacity .15s;}
 .cf-short-btn:hover{opacity:1;}
 .cf-cat-top{font-family:'Cinzel',serif;font-size:.38rem;font-weight:700;padding:1px 3px;border-radius:2px;color:#fff;text-align:center;margin-top:1px;letter-spacing:.2px;}
@@ -161,48 +163,63 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
 .notif.show{opacity:1;transform:translateY(0);}
 @media print{
   *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important;}
-  @page{size:A4 portrait;margin:6mm;}
   body{background:white!important;margin:0;padding:0;}
-  header,.sidebar,.tabs,.pt,.sw,.ja{display:none!important;}
+  header,.sidebar,.tabs,.pt,.sw,.ja,.right-panel{display:none!important;}
   .layout{display:grid!important;grid-template-columns:0 1fr!important;height:auto!important;}
   .mp{display:block!important;overflow:visible!important;}
   .tc{display:block!important;}
-  .right-panel{display:none!important;}#tab-preview{display:flex!important;flex-direction:column;}
+  #tab-preview{display:flex!important;flex-direction:column;}
   .ca{padding:0!important;overflow:visible!important;background:white!important;}
-  .cg{
+  .cbk{display:none!important;}
+  .cf{opacity:1!important;pointer-events:none!important;}
+  .show-back .cf{opacity:1!important;}
+  .es{display:none!important;}
+}
+
+/* A4 print mode (default) */
+@media print{
+  body:not(.poker-print) .cg{
     display:grid!important;
-    grid-template-columns:repeat(3,1fr)!important;
-    grid-template-rows:repeat(3,1fr)!important;
-    gap:3mm!important;
+    grid-template-columns:repeat(3,62mm)!important;
+    grid-template-rows:repeat(3,88mm)!important;
+    gap:2mm!important;
     width:197mm!important;
     height:282mm!important;
     page-break-after:always;
     break-after:page;
   }
-  /* Each group of 9 cards = one A4 page */
-  .cg .cw:nth-child(9n+1){
-    /* start of a new page-group — handled by JS chunking */
+  body:not(.poker-print) .cw{
+    width:62mm!important;height:88mm!important;
+    page-break-inside:avoid!important;break-inside:avoid!important;
+    overflow:hidden!important;cursor:default!important;
   }
-  .cw{
-    width:100%!important;
-    height:100%!important;
+  body:not(.poker-print) .spell-card{
+    width:100%!important;height:100%!important;
+    box-shadow:none!important;border:0.5px solid #bbb!important;overflow:hidden!important;
+  }
+}
+
+/* Poker card print mode: one card per page, 2.5 × 3.5 in */
+@media print{
+  body.poker-print{background:white!important;}
+  body.poker-print .cg{
+    display:block!important;
+    width:auto!important;height:auto!important;
+  }
+  body.poker-print .cw{
+    display:block!important;
+    width:2.5in!important;height:3.5in!important;
+    page-break-after:always!important;
+    break-after:page!important;
     page-break-inside:avoid!important;
-    break-inside:avoid!important;
     overflow:hidden!important;
     cursor:default!important;
   }
-  .spell-card{
-    width:100%!important;
-    height:100%!important;
-    box-shadow:none!important;
-    border:0.5px solid #bbb!important;
-    overflow:hidden!important;
+  body.poker-print .cw:last-child{page-break-after:avoid!important;break-after:avoid!important;}
+  body.poker-print .spell-card{
+    width:2.5in!important;height:3.5in!important;
+    box-shadow:none!important;border:0.5px solid #999!important;overflow:hidden!important;
   }
-  /* hide backs during print — show fronts */
-  .cbk{display:none!important;}
-  .cf{opacity:1!important;pointer-events:none!important;}
-  .show-back .cf{opacity:1!important;}
-  .es{display:none!important;}
 }
 
 /* ════ NEW LAYOUT SYSTEM ════════════════════════════════════ */
@@ -293,6 +310,7 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
     <button class="btn sm" onclick="openAdd()">+ Custom</button>
     <button class="btn sm" id="shortToggleBtn" onclick="toggleShortAll()" title="Toggle all cards between short and full description">📄 Short</button>
     <button class="btn sm pr" onclick="doPrint()">🖨️ Print A4</button>
+    <button class="btn sm pr" onclick="doPokerPrint()">🃏 Poker PDF</button>
   </div>
 </header>
 <div class="layout">
@@ -432,11 +450,18 @@ select:focus,input:focus{outline:none;border-color:var(--acc);}
       </div>
       <div class="ss">
         <h3>📄 Body Text</h3>
-        <div class="slr"><label>Max Body Size</label><input type="range" min="6" max="14" value="9" step=".5" oninput="setProp('--body-max',this.value*.0625+'rem');render();this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>9px</span></div>
+        <div class="slr"><label>Max Body Size</label><input type="range" min="6" max="14" value="10" step=".5" oninput="setProp('--body-max',this.value*.0625+'rem');render();this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>10px</span></div>
         <div class="slr"><label>Auto-Scale</label><input type="checkbox" id="autoScale" checked onchange="render()" style="width:auto"> <span style="font-size:.75rem;color:var(--txt-d)">(bigger for short texts)</span></div>
-        <div class="slr"><label>Stats Size</label><input type="range" min="4" max="10" value="7" step=".5" oninput="setProp('--stats-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>7px</span></div>
-        <div class="slr"><label>Stats Bold</label><input type="checkbox" id="statsBold" onchange="render()" style="width:auto"></div>
         <div class="slr"><label>Max Lines</label><input type="range" min="4" max="18" value="10" oninput="setProp('--body-lines',this.value);this.nextElementSibling.textContent=this.value"><span>10</span></div>
+      </div>
+      <div class="ss">
+        <h3>🔡 Font Sizes</h3>
+        <div class="slr"><label>Stats Value</label><input type="range" min="4" max="12" value="8" step=".5" oninput="setProp('--stats-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>8px</span></div>
+        <div class="slr"><label>Stats Label</label><input type="range" min="3" max="10" value="7" step=".5" oninput="setProp('--stats-lbl-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>7px</span></div>
+        <div class="slr"><label>Footer Classes</label><input type="range" min="3" max="10" value="7" step=".5" oninput="setProp('--footer-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>7px</span></div>
+        <div class="slr"><label>Category Tag</label><input type="range" min="3" max="10" value="6" step=".5" oninput="setProp('--cat-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>6px</span></div>
+        <div class="slr"><label>Mechanic Tag</label><input type="range" min="3" max="10" value="8" step=".5" oninput="setProp('--mech-sz',this.value*.0625+'rem');this.nextElementSibling.textContent=Math.round(this.value)+'px'"><span>8px</span></div>
+        <div class="slr"><label>Stats Bold</label><input type="checkbox" id="statsBold" onchange="render()" style="width:auto"></div>
       </div>
       <div class="ss">
         <h3>🏷️ Categories</h3>
@@ -909,13 +934,13 @@ function mkCard(sp){
     </div>
     <div style="height:1.5px;background:${hc};flex-shrink:0"></div>
     <div class="cf-s">
-      <div class="cf-si"><div class="cf-sl">Range</div><div class="cf-sv" style="${sv_style}">${sp.range}</div></div>
+      <div class="cf-si"><div class="cf-sl">Cast Time</div><div class="cf-sv" style="${sv_style}">${abbrCT(sp.ct)}</div></div>
       <div class="cf-sp"></div>
-      <div class="cf-si"><div class="cf-sl">Comp.</div><div class="cf-sv" style="${sv_style}">${sp.comp}</div></div>
+      <div class="cf-si"><div class="cf-sl">Range</div><div class="cf-sv" style="${sv_style}">${sp.range}</div></div>
+      <div class="cf-sp-h"></div>
+      <div class="cf-si"><div class="cf-sl">Components</div><div class="cf-sv" style="${sv_style}">${sp.comp}</div></div>
       <div class="cf-sp"></div>
       <div class="cf-si"><div class="cf-sl">Duration</div><div class="cf-sv" style="${sv_style}">${dur}</div></div>
-      <div class="cf-sp"></div>
-      <div class="cf-si"><div class="cf-sl">Cast Time</div><div class="cf-sv" style="${sv_style}">${abbrCT(sp.ct)}</div></div>
     </div>
     <div class="cf-b">
       ${badges}
@@ -1078,16 +1103,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
-// ── Print helper: chunk cards into pages of 9 ────────────────
+// ── Print helpers ─────────────────────────────────────────────
 function doPrint(){
   const cg = document.getElementById('cg');
-  const cards = [...cg.children];
+  const cards = [...cg.querySelectorAll('.cw')];
   if(!cards.length){ window.print(); return; }
-  // Remove existing page-groups if any
-  document.querySelectorAll('.pg').forEach(pg=>{
-    pg.replaceWith(...pg.children);
-  });
-  // Re-chunk
+  // Chunk cards into groups of 9 for A4 (3×3 grid per page)
   const pages = [];
   for(let i=0;i<cards.length;i+=9){
     const pg = document.createElement('div');
@@ -1097,20 +1118,35 @@ function doPrint(){
   }
   cg.replaceWith(...pages);
   window.print();
-  // Restore single grid after printing
+  // Restore single #cg after printing
   setTimeout(()=>{
+    const pgs = [...document.querySelectorAll('.pg')];
     const all = [];
-    document.querySelectorAll('.pg').forEach(pg=>{
-      all.push(...pg.children);
-    });
+    pgs.forEach(pg=>all.push(...pg.querySelectorAll('.cw')));
     const newCg = document.createElement('div');
-    newCg.className='cg';
-    newCg.id='cg';
+    newCg.className='cg'; newCg.id='cg';
     all.forEach(c=>newCg.appendChild(c));
-    document.querySelector('.ca').innerHTML='';
-    document.querySelector('.ca').appendChild(document.getElementById('es')||document.createElement('div'));
-    document.querySelector('.ca').appendChild(newCg);
-  }, 2000);
+    if(pgs.length){
+      pgs[0].replaceWith(newCg);
+      pgs.slice(1).forEach(pg=>pg.remove());
+    }
+  }, 1500);
+}
+
+function doPokerPrint(){
+  const cg = document.getElementById('cg');
+  if(!cg || !cg.querySelector('.cw')){ window.print(); return; }
+  // Inject @page size for poker cards
+  const ps = document.createElement('style');
+  ps.id = '_poker-page';
+  ps.textContent = '@page{size:2.5in 3.5in;margin:0;}';
+  document.head.appendChild(ps);
+  document.body.classList.add('poker-print');
+  window.print();
+  setTimeout(()=>{
+    document.body.classList.remove('poker-print');
+    document.getElementById('_poker-page').remove();
+  }, 1500);
 }
 
 
